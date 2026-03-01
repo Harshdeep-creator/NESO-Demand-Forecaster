@@ -1,6 +1,6 @@
 # NESO Daily Demand Forecasting Project
 
----
+
 
 ## 1. Project Overview
 
@@ -8,7 +8,7 @@
 
 This project implements **LSTM** and **Transformer** models for multi-step forecasting and compares them with **Naive**, **Seasonal Naive**, and **Moving Average** methods. Performance is validated using MAE, RMSE, MAPE, Directional Accuracy, and Diebold-Mariano statistical test, followed by walk-forward backtesting to simulate real-world deployment.
 
----
+
 
 ## 2. Project Features
 
@@ -51,7 +51,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 - Metrics saved as CSVs for record-keeping
 - Walk-forward backtesting simulates real-world sequential forecasting
 
----
+
 
 ## 3. Implementation Flow
 
@@ -82,7 +82,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 </details>
 
----
+
 
 ## 4. Project Outputs
 
@@ -114,7 +114,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 **Interpretation:** Model is robust under realistic sequential forecasting conditions.
 
----
+
 
 ## 5. Why Directional Accuracy Matters
 Even if absolute errors are reasonable, predicting demand trends is critical for:
@@ -124,7 +124,6 @@ Even if absolute errors are reasonable, predicting demand trends is critical for
 
 74% directional accuracy demonstrates practical applicability of the Transformer forecast.
 
----
 
 ## 6. Takeaways
 - Transformer consistently outperforms LSTM and baselines
@@ -138,9 +137,10 @@ Even if absolute errors are reasonable, predicting demand trends is critical for
 - Performance evaluation for time series
 - Statistical testing for forecast significance
 
----
+
 
 ## 7. Project Structure
+```
 forecasting-project/
 │
 ├── data/
@@ -170,9 +170,8 @@ forecasting-project/
 │
 ├── README.md
 └── requirements.txt
+```
 
-
----
 
 ## 8. Quick Start
 
@@ -185,9 +184,9 @@ python -m src.training_phase3
 
 Outputs will be saved in results/ as CSV metrics, plots, and model weights.
 
----
 
-## 9. Tools & Libraries
+
+9. Tools & Libraries
 
 This project leverages the following technologies:
 
@@ -200,9 +199,9 @@ This project leverages the following technologies:
 
 >  Tip: Use a virtual environment (`venv` or `conda`) to manage dependencies.
 
----
 
-## 10. Key Highlights
+
+10. Key Highlights
 
 - Multi-step forecasting with **LSTM** and **Transformer** models  
 - Evaluation using **absolute**, **relative**, and **directional** metrics  
