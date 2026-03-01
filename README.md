@@ -8,12 +8,24 @@
 
 This project implements **LSTM** and **Transformer** models for multi-step forecasting and compares them with **Naive**, **Seasonal Naive**, and **Moving Average** methods. Performance is validated using MAE, RMSE, MAPE, Directional Accuracy, and Diebold-Mariano statistical test, followed by walk-forward backtesting to simulate real-world deployment.
 
+## 1. Dataset
 
+**Source:** National Energy System Operator (NESO) – neso.energy
+**Time period:** 2019-2026
+**Type:** Real daily demand data
+**Preprocessing steps:** 
+1. Loading raw data from multiple files
+2. Creating a proper datetime index
+3. Keeping only relevant columns for forecasting
+4. Fixing missing timestamps
+5. Resampling to daily demand
+6. Saving processed dataset for modeling
 
-## 2. Project Features
+These steps ensure the data is clean, consistent, and ready for multi-step forecasting.
+
+## 3. Project Features
 
 ### Data Handling
-- Daily demand data (2019–2026) sourced from the National Energy System Operator (NESO), representing actual observed demand.
 - Train/Validation/Test split: 70% / 15% / 15%
 - Input Window: 30 days
 - Output Horizon: 7 days
@@ -53,29 +65,29 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 
 
-## 3. Implementation Flow
+## 4. Implementation Flow
 
 <details>
 <summary>Click to expand Implementation Steps</summary>
 
-### 3.1 Data Preparation
+### 4.1 Data Preparation
 1. Load CSV: `data/processed/demand_daily_2019_2026.csv`
 2. Scale data using `StandardScaler`
 3. Convert into PyTorch sequences: 30-day input → 7-day output
 4. Load into `DataLoader`
 
-### 3.2 Model Training
+### 4.2 Model Training
 1. Train **LSTM** and **Transformer** with MSE Loss and Adam optimizer
 2. Monitor epoch-wise loss
 3. Plot convergence early for inspection
 
-### 3.3 Prediction & Evaluation
+### 4.3 Prediction & Evaluation
 1. Predict on train, val, test sets
 2. Compute baseline predictions
 3. Evaluate metrics: MAE, RMSE, MAPE, Directional Accuracy
 4. Compare models using **Diebold-Mariano test**
 
-### 3.4 Walk-Forward Backtest
+### 4.4 Walk-Forward Backtest
 1. Sequentially split test data into rolling windows
 2. Predict next window, roll forward, repeat
 3. Compute overall metrics to assess robust real-world performance
@@ -84,7 +96,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 
 
-## 4. Project Outputs
+## 5. Project Outputs
 
 ### Baselines vs LSTM Metrics
 | Model | MAE | RMSE | MAPE |
@@ -116,7 +128,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 
 
-## 5. Why Directional Accuracy Matters
+## 6. Why Directional Accuracy Matters
 Even if absolute errors are reasonable, predicting demand trends is critical for:
 - Inventory planning
 - Stock replenishment
@@ -125,7 +137,7 @@ Even if absolute errors are reasonable, predicting demand trends is critical for
 74% directional accuracy demonstrates practical applicability of the Transformer forecast.
 
 
-## 6. Takeaways
+## 7. Takeaways
 - Transformer consistently outperforms LSTM and baselines
 - Statistical tests validate model superiority
 - Walk-forward backtesting ensures model robustness
@@ -139,17 +151,13 @@ Even if absolute errors are reasonable, predicting demand trends is critical for
 
 
 
-## 7. Project Structure
+## 8. Project Structure
 ```
 forecasting-project/
 │
 ├── data/
 │ ├── raw/
 │ └── processed/
-│
-├── notebooks/
-│ └── exploration.ipynb
-│
 ├── src/
 │ ├── preprocessing.py
 │ ├── data_loader.py
@@ -167,13 +175,11 @@ forecasting-project/
 │ ├── metrics_phase3_comparison.csv
 │ ├── plots/
 │ └── model_weights/
-│
-├── README.md
 └── requirements.txt
 ```
 
 
-## 8. Quick Start
+## 9. Quick Start
 
 ```bash
 # Install dependencies
@@ -186,7 +192,7 @@ Outputs will be saved in results/ as CSV metrics, plots, and model weights.
 
 
 
-9. Tools & Libraries
+10. Tools & Libraries
 
 This project leverages the following technologies:
 
@@ -201,7 +207,7 @@ This project leverages the following technologies:
 
 
 
-10. Key Highlights
+11. Key Highlights
 
 - Multi-step forecasting with **LSTM** and **Transformer** models  
 - Evaluation using **absolute**, **relative**, and **directional** metrics  
