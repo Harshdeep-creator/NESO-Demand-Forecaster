@@ -1,235 +1,212 @@
-NESO Daily Demand Forecasting Project
+# NESO Daily Demand Forecasting Project
 
-Predict 7-day ahead daily demand using LSTM and Transformer models, compared against classical baselines. This project demonstrates multi-step forecasting, performance evaluation, and walk-forward backtesting for real-world applicability.
+---
 
-Table of Contents
+## 1. Project Overview
 
-Project Overview
+**Goal:** Predict 7-day ahead daily demand using sequence models and evaluate against classical baselines.
 
-Features
+This project implements **LSTM** and **Transformer** models for multi-step forecasting and compares them with **Naive**, **Seasonal Naive**, and **Moving Average** methods. Performance is validated using MAE, RMSE, MAPE, Directional Accuracy, and Diebold-Mariano statistical test, followed by walk-forward backtesting to simulate real-world deployment.
 
-Implementation Flow
+---
 
-Results
+## 2. Project Features
+
+### Data Handling
+- Daily demand data (2019–2026)
+- Train/Validation/Test split: 70% / 15% / 15%
+- Input Window: 30 days
+- Output Horizon: 7 days
 
-Why Directional Accuracy Matters
+### Models
 
-Takeaways & Learning Outcomes
+#### LSTM
+- Input: 30 days of past demand
+- Output: 7 days ahead
+- 2 hidden layers, 64 units each
+- Optimizer: Adam, Loss: MSE
 
-Project Structure
+#### Transformer
+- Input: same 30 days
+- Output: 7 days ahead
+- Parameters: `d_model=128`, `n_heads=4`, `num_layers=2`, `dim_feedforward=256`
+- Attention mechanism captures long-range dependencies better than LSTM
 
-Quick Start
+### Baselines
+- **Naive:** repeats last observed value  
+- **Seasonal Naive:** repeats last 7-day seasonal pattern  
+- **Moving Average:** average of last 7 days repeated  
 
-Tools & Libraries
+### Metrics
+| Metric | Description |
+|--------|-------------|
+| MAE | Average absolute error. Lower is better. |
+| RMSE | Penalizes large errors more. Lower is better. |
+| MAPE | Percent error relative to actual. Useful for scale-invariant comparison. |
+| Directional Accuracy (%) | % of correctly predicted trends. Crucial for operational decisions. |
+| Diebold-Mariano Test | Compares forecast performance statistically. |
 
-Project Overview
+### Visualization & Outputs
+- Forecast plots for Train, Validation, and Test sets
+- Metrics saved as CSVs for record-keeping
+- Walk-forward backtesting simulates real-world sequential forecasting
 
-Goal: Forecast 7-day ahead daily demand.
+---
 
-Models: LSTM and Transformer for multi-step forecasting.
+## 3. Implementation Flow
 
-Baselines: Naive, Seasonal Naive, and Moving Average.
+<details>
+<summary>Click to expand Implementation Steps</summary>
 
-Evaluation Metrics: MAE, RMSE, MAPE, Directional Accuracy, and Diebold-Mariano test.
+### 3.1 Data Preparation
+1. Load CSV: `data/processed/demand_daily_2019_2026.csv`
+2. Scale data using `StandardScaler`
+3. Convert into PyTorch sequences: 30-day input → 7-day output
+4. Load into `DataLoader`
 
-Validation: Walk-forward backtesting to simulate real-world deployment.
+### 3.2 Model Training
+1. Train **LSTM** and **Transformer** with MSE Loss and Adam optimizer
+2. Monitor epoch-wise loss
+3. Plot convergence early for inspection
 
-Features
-Data Handling
+### 3.3 Prediction & Evaluation
+1. Predict on train, val, test sets
+2. Compute baseline predictions
+3. Evaluate metrics: MAE, RMSE, MAPE, Directional Accuracy
+4. Compare models using **Diebold-Mariano test**
 
-Daily demand data (2019–2026)
+### 3.4 Walk-Forward Backtest
+1. Sequentially split test data into rolling windows
+2. Predict next window, roll forward, repeat
+3. Compute overall metrics to assess robust real-world performance
 
-Train/Validation/Test split: 70% / 15% / 15%
+</details>
 
-Input window: 30 days → Output horizon: 7 days
+---
 
-Models
+## 4. Project Outputs
 
-LSTM
+### Baselines vs LSTM Metrics
+| Model | MAE | RMSE | MAPE |
+|-------|-----|------|------|
+| Naive | 0.207 | 0.263 | 97% |
+| Seasonal Naive | 0.222 | 0.275 | 129% |
+| Moving Average | 0.183 | 0.222 | 114% |
+| LSTM | 0.126 | 0.154 | 74% |
 
-2 hidden layers, 64 units each
+**Interpretation:** LSTM outperforms all baselines. DM test shows statistically significant improvement over Naive.
 
-Input: past 30 days → Output: next 7 days
-
-Optimizer: Adam, Loss: MSE
-
-Transformer
-
-Parameters: d_model=128, n_heads=4, num_layers=2, dim_feedforward=256
-
-Captures long-range dependencies better than LSTM
-
-Baselines
-
-Naive: repeats last observed value
-
-Seasonal Naive: repeats last 7-day pattern
-
-Moving Average: average of last 7 days
-
-Metrics
-Metric	Description
-MAE	Average absolute error
-RMSE	Penalizes large errors
-MAPE	Scale-invariant percent error
-Directional Accuracy (%)	% of correctly predicted trends
-Diebold-Mariano Test	Statistical comparison of forecasts
-Visualization
-
-Forecast plots for Train, Validation, and Test sets
-
-Metrics saved as CSV for record-keeping
-
-Implementation Flow
-
-Data Preparation
-
-Load CSV (data/processed/demand_daily_2019_2026.csv)
-
-Scale data using StandardScaler
-
-Convert to sequences for PyTorch: 30-day input → 7-day output
-
-Load into DataLoader
-
-Model Training
-
-Train LSTM and Transformer using MSE loss and Adam optimizer
-
-Monitor epoch-wise loss
-
-Early plotting for convergence inspection
-
-Prediction & Evaluation
-
-Predict on train, val, test sets
-
-Compute baselines
-
-Evaluate metrics: MAE, RMSE, MAPE, Directional Accuracy
-
-Compare models using Diebold-Mariano test
-
-Walk-Forward Backtesting
-
-Sequential rolling windows on test data
-
-Predict next window, roll forward, repeat
-
-Compute overall metrics for robust evaluation
-
-Results
-Baselines vs LSTM
-Model	MAE	RMSE	MAPE
-Naive	0.207	0.263	97%
-Seasonal Naive	0.222	0.275	129%
-Moving Average	0.183	0.222	114%
-LSTM	0.126	0.154	74%
-
-Interpretation: LSTM outperforms all baselines. DM test confirms statistical significance.
-
-LSTM vs Transformer
-Model	MAE	RMSE	MAPE	Directional Accuracy (%)
-LSTM	0.126	0.154	74.4%	61.9
-Transformer	0.099	0.128	59.1%	74.0
-
-Interpretation: Transformer captures complex demand patterns better, improving trend prediction.
-
-Walk-Forward Backtest
-Metric	Value
-MAE	0.096
-RMSE	0.121
-MAPE	35.6%
-Directional Accuracy	73.9%
-Why Directional Accuracy Matters
-
-Even with reasonable absolute errors, predicting trends is key for:
-
-Inventory planning
-
-Stock replenishment
-
-Resource allocation
+### LSTM vs Transformer Metrics
+| Model | MAE | RMSE | MAPE | Directional Accuracy (%) |
+|-------|-----|------|------|-------------------------|
+| LSTM | 0.126 | 0.154 | 74.4% | 61.9 |
+| Transformer | 0.099 | 0.128 | 59.1% | 74.0 |
+
+**Interpretation:** Transformer captures complex demand patterns better, reducing error and improving trend prediction.
+
+### Walk-Forward Backtest
+| Metric | Value |
+|--------|-------|
+| MAE | 0.096 |
+| RMSE | 0.121 |
+| MAPE | 35.6% |
+| Directional Accuracy | 73.9% |
+
+**Interpretation:** Model is robust under realistic sequential forecasting conditions.
+
+---
+
+## 5. Why Directional Accuracy Matters
+Even if absolute errors are reasonable, predicting demand trends is critical for:
+- Inventory planning
+- Stock replenishment
+- Resource allocation
 
 74% directional accuracy demonstrates practical applicability of the Transformer forecast.
 
-Takeaways & Learning Outcomes
+---
 
-Transformer outperforms LSTM and baselines consistently
+## 6. Takeaways
+- Transformer consistently outperforms LSTM and baselines
+- Statistical tests validate model superiority
+- Walk-forward backtesting ensures model robustness
+- Professional outputs (plots, CSVs, models) make the project deployment-ready
 
-Statistical tests validate model superiority
+**Learning Outcomes:**
+- Multi-step forecasting with PyTorch
+- Sequence modeling & attention mechanisms
+- Performance evaluation for time series
+- Statistical testing for forecast significance
 
-Walk-forward backtesting ensures robustness
+---
 
-Outputs (plots, CSVs, model weights) make project deployment-ready
-
-Learning Outcomes:
-
-Multi-step forecasting with PyTorch
-
-Sequence modeling & attention mechanisms
-
-Time series performance evaluation
-
-Statistical testing for forecast significance
-
-Project Structure
+## 7. Project Structure
 forecasting-project/
 │
 ├── data/
-│   ├── raw/
-│   └── processed/
+│ ├── raw/
+│ └── processed/
 │
 ├── notebooks/
-│   └── exploration.ipynb
+│ └── exploration.ipynb
 │
 ├── src/
-│   ├── preprocessing.py
-│   ├── data_loader.py
-│   ├── baselines.py
-│   ├── models.py
-│   ├── transformer_model.py
-│   ├── training.py
-│   ├── evaluation.py
-│   ├── significance.py
-│   ├── training_phase3.py
-│   └── backtesting.py
+│ ├── preprocessing.py
+│ ├── data_loader.py
+│ ├── baselines.py
+│ ├── models.py
+│ ├── transformer_model.py
+│ ├── training.py
+│ ├── evaluation.py
+│ ├── significance.py
+│ ├── training_phase3.py
+│ └── backtesting.py
 │
 ├── results/
-│   ├── metrics_phase3.csv
-│   ├── metrics_phase3_comparison.csv
-│   ├── plots/
-│   └── model_weights/
+│ ├── metrics_phase3.csv
+│ ├── metrics_phase3_comparison.csv
+│ ├── plots/
+│ └── model_weights/
 │
 ├── README.md
 └── requirements.txt
-Quick Start
+
+
+---
+
+## 8. Quick Start
+
+```bash
 # Install dependencies
 pip install -r requirements.txt
 
 # Run full training and evaluation
 python -m src.training_phase3
 
-All outputs (metrics, plots, model weights) are saved in results/.
+Outputs will be saved in results/ as CSV metrics, plots, and model weights.
 
-Tools & Libraries
+---
 
-Python 3.9+
+## 9. Tools & Libraries
 
-PyTorch
+This project leverages the following technologies:
 
-NumPy, Pandas
+- **Python 3.9+** – Core programming language  
+- **PyTorch** – Deep learning framework for LSTM & Transformer  
+- **NumPy** – Numerical computations  
+- **Pandas** – Data handling and manipulation  
+- **scikit-learn** – Data preprocessing and evaluation metrics  
+- **Matplotlib / Seaborn** – Visualization of forecasts and metrics  
 
-scikit-learn
+>  Tip: Use a virtual environment (`venv` or `conda`) to manage dependencies.
 
-Matplotlib / Seaborn
+---
 
-Key Highlights
+## 10. Key Highlights
 
-Multi-step forecasting using LSTM & Transformer
-
-Evaluation via absolute, relative, and directional metrics
-
-Walk-forward backtesting ensures real-world robustness
-
-Fully reproducible and deployment-ready
+- Multi-step forecasting with **LSTM** and **Transformer** models  
+- Evaluation using **absolute**, **relative**, and **directional** metrics  
+- Statistical validation with **Diebold-Mariano test**  
+- Robustness verified via **walk-forward backtesting**  
+- Professional outputs: plots, CSVs, and model weights  
+- Fully **reproducible** and deployment-ready  
