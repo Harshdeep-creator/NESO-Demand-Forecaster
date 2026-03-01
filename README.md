@@ -13,7 +13,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 ## 2. Project Features
 
 ### Data Handling
-- Daily demand data (2019–2026)
+- Daily demand data (2019–2026) sourced from the National Energy System Operator (NESO), representing actual observed demand.
 - Train/Validation/Test split: 70% / 15% / 15%
 - Input Window: 30 days
 - Output Horizon: 7 days
