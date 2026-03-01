@@ -10,10 +10,10 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 
 ## 1. Dataset
 
-**Source:** National Energy System Operator (NESO) – neso.energy
-**Time period:** 2019-2026
-**Type:** Real daily demand data
-**Preprocessing steps:** 
+### Source: National Energy System Operator (NESO) – neso.energy
+### Time period: 2019-2026
+### Type: Real daily demand data
+### Preprocessing steps:
 1. Loading raw data from multiple files
 2. Creating a proper datetime index
 3. Keeping only relevant columns for forecasting
