@@ -1,11 +1,17 @@
-# Streamlit & project essentials
+# Streamlit and app essentials
 streamlit==1.26.0
-numpy
-pandas
-scikit-learn
-matplotlib
+numpy==2.4.2
+pandas==3.0.1
+scikit-learn==1.8.0
+matplotlib==3.10.8
 
-# PyTorch (CPU-compatible for Python 3.13)
+# PyTorch stack compatible with Python 3.13
 torch==2.10.0
-torchvision==0.15.2
-torchaudio==2.10.2
+torchvision==0.15.1
+torchaudio==2.10.1
+
+# Optional for better logging/plots in Streamlit
+rich==14.3.3
+markdown-it-py==4.0.0
+mdurl==0.1.2
+pygments==2.19.2
