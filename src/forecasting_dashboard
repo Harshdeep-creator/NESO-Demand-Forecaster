@@ -5,43 +5,41 @@ import os
 import plotly.express as px
 import plotly.graph_objects as go
 
-# -----------------------------
-# CONFIG
-# -----------------------------
+# -------------------------------------------------
+# CONFIGURATION
+# -------------------------------------------------
 
 st.set_page_config(
-    page_title="Energy Demand Forecasting",
-    page_icon="⚡",
+    page_title="Energy Demand Forecasting Platform",
     layout="wide"
 )
 
 DATA_FOLDER = "data/processed"
 PLOTS_FOLDER = "results/plots"
-METRICS_FILE = "results/metrics.csv"
 
-# -----------------------------
+# -------------------------------------------------
 # HEADER
-# -----------------------------
+# -------------------------------------------------
 
-st.title(" Energy Demand Forecasting Platform")
+st.title("Energy Demand Forecasting Platform")
 
 st.markdown(
 """
-Deep learning forecasting system trained on **National Energy System Operator (NESO) GB Grid demand data**.
+Deep learning forecasting system trained on National Energy System Operator (NESO) GB Grid demand data.
 
-Models implemented:
+Models implemented
 
-• Statistical baselines  
-• LSTM neural network  
-• Transformer architecture  
+- Statistical baselines  
+- LSTM neural network  
+- Transformer architecture  
 
-Evaluation includes **walk-forward validation and statistical significance testing**.
+Evaluation includes walk-forward validation and statistical significance testing.
 """
 )
 
-# -----------------------------
+# -------------------------------------------------
 # SIDEBAR
-# -----------------------------
+# -------------------------------------------------
 
 page = st.sidebar.radio(
     "Navigation",
@@ -57,9 +55,9 @@ page = st.sidebar.radio(
     key="main_nav"
 )
 
-# -----------------------------
-# OVERVIEW PAGE
-# -----------------------------
+# -------------------------------------------------
+# OVERVIEW
+# -------------------------------------------------
 
 if page == "Overview":
 
@@ -67,7 +65,7 @@ if page == "Overview":
 
     c1, c2, c3, c4 = st.columns(4)
 
-    c1.metric("Dataset Range", "2019–2024")
+    c1.metric("Dataset Range", "2019 – 2024")
     c2.metric("Lookback Window", "90 Days")
     c3.metric("Forecast Horizon", "7 Days")
     c4.metric("Backtest Windows", "71")
@@ -76,17 +74,19 @@ if page == "Overview":
 
     st.subheader("Pipeline")
 
-    st.markdown("""
-1. Data preprocessing  
-2. Baseline statistical models  
-3. Deep learning forecasting models  
-4. Walk-forward validation  
-5. Diebold-Mariano significance testing  
-""")
+    st.markdown(
+    """
+    1. Data preprocessing  
+    2. Baseline statistical models  
+    3. Deep learning forecasting models  
+    4. Walk-forward validation  
+    5. Diebold–Mariano statistical testing  
+    """
+    )
 
-# -----------------------------
+# -------------------------------------------------
 # DATASET EXPLORER
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Dataset Explorer":
 
@@ -97,7 +97,6 @@ elif page == "Dataset Explorer":
         files = [f for f in os.listdir(DATA_FOLDER) if f.endswith(".csv")]
 
         if not files:
-
             st.warning("No datasets found.")
 
         else:
@@ -120,18 +119,17 @@ elif page == "Dataset Explorer":
 
             st.caption("Dataset: NESO GB Grid Demand (2019–2024)")
 
-            st.dataframe(df.head())
+            st.dataframe(df.head(), use_container_width=True)
 
             c1, c2 = st.columns(2)
 
             c1.metric("Rows", df.shape[0])
             c2.metric("Columns", df.shape[1])
 
-            st.markdown("### Descriptive Statistics")
+            st.markdown("Descriptive Statistics")
+            st.dataframe(df.describe(), use_container_width=True)
 
-            st.dataframe(df.describe())
-
-            st.markdown("### Time Series Visualization")
+            st.markdown("Time Series Visualization")
 
             if "date" in df.columns:
 
@@ -155,51 +153,94 @@ elif page == "Dataset Explorer":
 
         st.error("data/processed folder not found")
 
-# -----------------------------
+# -------------------------------------------------
 # MODEL PERFORMANCE
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Model Performance":
 
-    st.subheader("Deep Learning Model Results")
+    st.subheader("Model Performance Comparison")
 
-    if os.path.exists(METRICS_FILE):
+    df = pd.DataFrame({
 
-        df = pd.read_csv(METRICS_FILE)
+        "Model": [
+            "Naive",
+            "Seasonal Naive",
+            "Moving Average",
+            "LSTM",
+            "Transformer"
+        ],
 
-    else:
+        "MAE": [
+            0.203201,
+            0.225035,
+            0.179111,
+            0.098599,
+            0.069000
+        ],
 
-        df = pd.DataFrame({
+        "RMSE": [
+            0.256921,
+            0.273033,
+            0.218067,
+            0.127598,
+            0.095000
+        ],
 
-            "Model": ["LSTM", "Transformer"],
+        "MAPE": [
+            100.198158,
+            131.126709,
+            118.195213,
+            62.505573,
+            34.207000
+        ],
 
-            "MAE": [0.099, 0.069],
+        "Directional Accuracy": [
+            None,
+            None,
+            None,
+            72.604,
+            84.478
+        ]
 
-            "RMSE": [0.128, 0.095],
+    })
 
-            "MAPE": [62.506, 34.207],
+    st.dataframe(df, use_container_width=True)
 
-            "Directional Accuracy": [72.604, 84.478]
+    st.markdown("Error Metrics Comparison")
 
-        })
+    metric = st.selectbox(
+        "Select Metric",
+        ["MAE", "RMSE", "MAPE"]
+    )
 
-    st.dataframe(df)
-
-    st.markdown("### MAE Comparison")
-
-    fig = px.bar(df, x="Model", y="MAE", color="Model")
+    fig = px.bar(
+        df,
+        x="Model",
+        y=metric,
+        color="Model",
+        title=f"{metric} Comparison Across Models"
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown("### RMSE Comparison")
+    st.markdown("Directional Accuracy (Deep Learning Models)")
 
-    fig2 = px.bar(df, x="Model", y="RMSE", color="Model")
+    acc_df = df[df["Directional Accuracy"].notna()]
+
+    fig2 = px.bar(
+        acc_df,
+        x="Model",
+        y="Directional Accuracy",
+        color="Model",
+        title="Directional Accuracy: LSTM vs Transformer"
+    )
 
     st.plotly_chart(fig2, use_container_width=True)
 
-# -----------------------------
+# -------------------------------------------------
 # FORECAST GALLERY
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Forecast Gallery":
 
@@ -210,7 +251,6 @@ elif page == "Forecast Gallery":
         plots = [f for f in os.listdir(PLOTS_FOLDER) if f.endswith(".png")]
 
         if not plots:
-
             st.warning("No plots found.")
 
         else:
@@ -246,9 +286,9 @@ elif page == "Forecast Gallery":
 
         st.error("results/plots folder not found")
 
-# -----------------------------
+# -------------------------------------------------
 # BACKTEST RESULTS
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Backtest Results":
 
@@ -261,15 +301,15 @@ elif page == "Backtest Results":
     c3.metric("MAPE", "30.52%")
     c4.metric("Directional Accuracy", "82.63%")
 
-    st.info("Backtest windows used: 71")
+    st.info("Total backtest windows: 71")
 
-# -----------------------------
+# -------------------------------------------------
 # MODEL LEADERBOARD
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Model Leaderboard":
 
-    st.subheader("Model Comparison")
+    st.subheader("Model Leaderboard")
 
     df = pd.DataFrame({
 
@@ -281,52 +321,34 @@ elif page == "Model Leaderboard":
             "Transformer"
         ],
 
-        "MAE": [
-            0.203,
-            0.225,
-            0.179,
-            0.099,
-            0.069
-        ],
-
-        "RMSE": [
-            0.256,
-            0.273,
-            0.218,
-            0.127,
-            0.095
-        ],
-
-        "MAPE": [
-            100.19,
-            131.12,
-            118.19,
-            62.50,
-            34.20
-        ]
+        "MAE": [0.203, 0.225, 0.179, 0.099, 0.069],
+        "RMSE": [0.256, 0.273, 0.218, 0.127, 0.095],
+        "MAPE": [100.19, 131.12, 118.19, 62.50, 34.20]
     })
 
-    st.dataframe(df)
+    df = df.sort_values("MAE")
+
+    st.dataframe(df, use_container_width=True)
 
     fig = px.bar(
         df,
         x="Model",
         y="RMSE",
         color="Model",
-        title="RMSE Comparison"
+        title="RMSE Comparison Across Models"
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-# -----------------------------
+# -------------------------------------------------
 # STATISTICAL TEST
-# -----------------------------
+# -------------------------------------------------
 
 elif page == "Statistical Test":
 
-    st.subheader("Diebold-Mariano Test")
+    st.subheader("Diebold–Mariano Statistical Test")
 
-    st.write("Comparison: **LSTM vs Naive Baseline**")
+    st.write("Comparison: LSTM vs Naive Baseline")
 
     c1, c2 = st.columns(2)
 
