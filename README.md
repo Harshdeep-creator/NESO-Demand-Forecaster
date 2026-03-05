@@ -11,7 +11,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 ## 1. Dataset
 
 **Source:** National Energy System Operator (NESO) – [neso.energy](https://www.neso.energy/)  
-**Time Period:** 2019–2026  
+**Time Period:** 2019–2024  
 **Type:** Real daily demand data  
 
 **Preprocessing Steps:**  
@@ -20,7 +20,7 @@ This project implements **LSTM** and **Transformer** models for multi-step forec
 3. **Select relevant columns** needed for forecasting.  
 4. **Fix missing timestamps** to ensure continuity.  
 5. **Resample to daily frequency** to standardize the data.  
-6. **Save processed dataset** for modeling and analysis (`data/processed/demand_daily_2019_2026.csv`).  
+6. **Save processed dataset** for modeling and analysis (`data/processed/demand_daily_2019_2024.csv`).  
 
 These steps ensure the dataset is **clean, consistent, and ready for multi-step forecasting**.
 
@@ -28,21 +28,21 @@ These steps ensure the dataset is **clean, consistent, and ready for multi-step 
 
 ### Data Handling
 - Train/Validation/Test split: 70% / 15% / 15%
-- Input Window: 30 days
+- Input Window: 90 days
 - Output Horizon: 7 days
 
 ### Models
 
 #### LSTM
-- Input: 30 days of past demand
+- Input: 90 days of past demand
 - Output: 7 days ahead
 - 2 hidden layers, 64 units each
 - Optimizer: Adam, Loss: MSE
 
 #### Transformer
-- Input: same 30 days
+- Input: same 90 days
 - Output: 7 days ahead
-- Parameters: `d_model=128`, `n_heads=4`, `num_layers=2`, `dim_feedforward=256`
+- Parameters: `d_model=224`, `n_heads=7`, `num_layers=4`, `dim_feedforward=896`
 - Attention mechanism captures long-range dependencies better than LSTM
 
 ### Baselines
@@ -72,9 +72,9 @@ These steps ensure the dataset is **clean, consistent, and ready for multi-step 
 <summary>Click to expand Implementation Steps</summary>
 
 ### 4.1 Data Preparation
-1. Load CSV: `data/processed/demand_daily_2019_2026.csv`
+1. Load CSV: `data/processed/demand_daily_2019_2024.csv`
 2. Scale data using `StandardScaler`
-3. Convert into PyTorch sequences: 30-day input → 7-day output
+3. Convert into PyTorch sequences: 90-day input → 7-day output
 4. Load into `DataLoader`
 
 ### 4.2 Model Training
@@ -102,28 +102,28 @@ These steps ensure the dataset is **clean, consistent, and ready for multi-step 
 ### Baselines vs LSTM Metrics
 | Model | MAE | RMSE | MAPE |
 |-------|-----|------|------|
-| Naive | 0.207 | 0.263 | 97% |
-| Seasonal Naive | 0.222 | 0.275 | 129% |
-| Moving Average | 0.183 | 0.222 | 114% |
-| LSTM | 0.126 | 0.154 | 74% |
+| Naive | 0.203201   |  0.256921 | 100% |
+| Seasonal Naive | 0.22503 | 0.273033 | 131% |
+| Moving Average |  0.179111  | 0.218067 | 118% |
+| LSTM | 0.098599 | 0.127598 | 62.5% |
 
 **Interpretation:** LSTM outperforms all baselines. DM test shows statistically significant improvement over Naive.
 
 ### LSTM vs Transformer Metrics
 | Model | MAE | RMSE | MAPE | Directional Accuracy (%) |
 |-------|-----|------|------|-------------------------|
-| LSTM | 0.126 | 0.154 | 74.4% | 61.9 |
-| Transformer | 0.099 | 0.128 | 59.1% | 74.0 |
+| LSTM | 0.099 |  0.128   | 62.506  |72.604 |
+| Transformer | 0.069 | 0.095  | 34.207  | 84.478 |
 
 **Interpretation:** Transformer captures complex demand patterns better, reducing error and improving trend prediction.
 
 ### Walk-Forward Backtest
 | Metric | Value |
 |--------|-------|
-| MAE | 0.096 |
-| RMSE | 0.121 |
-| MAPE | 35.6% |
-| Directional Accuracy | 73.9% |
+| MAE | 0.074 |
+| RMSE | 0.101 |
+| MAPE | 30.52% |
+| Directional Accuracy |82.63%|
 
 **Interpretation:** Model is robust under realistic sequential forecasting conditions.
 
